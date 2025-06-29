@@ -23,9 +23,12 @@ const IdeaForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('Form submitted!');
     console.log('Form data before validation:', formData);
     
-    if (!formData.firstName || !formData.ideaDescription || !formData.targetCustomer || !formData.problemSolved) {
+    // Validation
+    if (!formData.firstName.trim() || !formData.ideaDescription.trim() || !formData.targetCustomer.trim() || !formData.problemSolved.trim()) {
+      console.log('Validation failed - missing required fields');
       toast({
         title: "Error",
         description: "Por favor completa todos los campos obligatorios",
@@ -35,30 +38,38 @@ const IdeaForm = () => {
     }
 
     setIsLoading(true);
-    console.log('Enviando datos a webhook:', formData);
+    console.log('Sending data to webhook...');
 
     try {
-      const response = await fetch('https://n8n-demo-n8n.1riddk.easypanel.host/webhook/testealo-ai-lovable', {
+      const webhookUrl = 'https://n8n-demo-n8n.1riddk.easypanel.host/webhook/testealo-ai-lovable';
+      const payload = {
+        ...formData,
+        timestamp: new Date().toISOString(),
+        source: 'testealo-ai-landing'
+      };
+
+      console.log('Webhook URL:', webhookUrl);
+      console.log('Payload:', payload);
+
+      const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...formData,
-          timestamp: new Date().toISOString(),
-          source: 'testealo-ai-landing'
-        }),
+        body: JSON.stringify(payload),
       });
 
-      console.log('Response status:', response.status);
+      console.log('Response received. Status:', response.status);
+      console.log('Response headers:', response.headers);
       
       if (response.ok) {
+        console.log('Success! Form submitted successfully');
         toast({
           title: "¡Idea Enviada!",
           description: "Tu idea ha sido enviada para validación. Te contactaremos pronto con los resultados.",
         });
         
-        // Reset form after successful submission
+        // Reset form
         setFormData({
           firstName: '',
           experience: 'first-time',
@@ -68,23 +79,30 @@ const IdeaForm = () => {
         });
       } else {
         const errorText = await response.text();
-        console.error('Error response:', errorText);
-        throw new Error('Error en el envío');
+        console.error('HTTP Error - Status:', response.status);
+        console.error('Error response body:', errorText);
+        
+        toast({
+          title: "Error",
+          description: `Error ${response.status}: Problema al enviar la información. Por favor intenta de nuevo.`,
+          variant: "destructive",
+        });
       }
     } catch (error) {
-      console.error('Error enviando datos:', error);
+      console.error('Network/Fetch Error:', error);
       toast({
-        title: "Error",
-        description: "Hubo un problema al enviar tu idea. Por favor intenta de nuevo.",
+        title: "Error de Conexión",
+        description: "No se pudo conectar con el servidor. Verifica tu conexión a internet e intenta de nuevo.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
+      console.log('Form submission completed');
     }
   };
 
   const handleInputChange = (field: string, value: string) => {
-    console.log(`Updating ${field} with value:`, value);
+    console.log(`Updating field "${field}" with value:`, value);
     setFormData(prev => ({
       ...prev,
       [field]: value
