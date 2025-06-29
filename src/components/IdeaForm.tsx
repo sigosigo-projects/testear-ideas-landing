@@ -23,6 +23,8 @@ const IdeaForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('Form data before validation:', formData);
+    
     if (!formData.firstName || !formData.ideaDescription || !formData.targetCustomer || !formData.problemSolved) {
       toast({
         title: "Error",
@@ -48,6 +50,8 @@ const IdeaForm = () => {
         }),
       });
 
+      console.log('Response status:', response.status);
+      
       if (response.ok) {
         toast({
           title: "¡Idea Enviada!",
@@ -63,6 +67,8 @@ const IdeaForm = () => {
           problemSolved: ''
         });
       } else {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
         throw new Error('Error en el envío');
       }
     } catch (error) {
@@ -78,6 +84,7 @@ const IdeaForm = () => {
   };
 
   const handleInputChange = (field: string, value: string) => {
+    console.log(`Updating ${field} with value:`, value);
     setFormData(prev => ({
       ...prev,
       [field]: value
