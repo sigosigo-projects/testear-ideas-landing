@@ -19,11 +19,7 @@ const HeroSection = () => {
             
             <div className="space-y-4 text-lg text-gray-700 leading-relaxed">
               <p>
-                <strong>Testealo.ai</strong> es una herramienta de IA que te ayuda a validar tu idea de negocio, analizar la competencia y encontrar a tus clientes ideales.
-              </p>
-              
-              <p>
-                Obtén feedback rápido y una calificación objetiva de tu emprendimiento. ¡Únete a más de 200,000 emprendedores que ya han validado sus ideas con nosotros! 💡
+                <strong>Testealo.ai</strong> es una herramienta de IA que te ayuda a validar tu idea de negocio, analizar la competencia y encontrar a tus clientes ideales. ¡Únete a más de 200,000 emprendedores que ya han validado sus ideas con nosotros! 💡
               </p>
             </div>
 

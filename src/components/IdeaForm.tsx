@@ -14,7 +14,7 @@ const IdeaForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
-    experience: '',
+    experience: 'first-time',
     ideaDescription: '',
     targetCustomer: '',
     problemSolved: ''
@@ -57,7 +57,7 @@ const IdeaForm = () => {
         // Reset form after successful submission
         setFormData({
           firstName: '',
-          experience: '',
+          experience: 'first-time',
           ideaDescription: '',
           targetCustomer: '',
           problemSolved: ''
@@ -114,7 +114,7 @@ const IdeaForm = () => {
               <Label htmlFor="experience" className="text-sm font-medium text-gray-700">
                 ¿Has Construido Algo Antes?*
               </Label>
-              <Select onValueChange={(value) => handleInputChange('experience', value)}>
+              <Select value={formData.experience} onValueChange={(value) => handleInputChange('experience', value)}>
                 <SelectTrigger className="border-gray-300 focus:border-orange-400">
                   <SelectValue placeholder="NO, Primera vez como fundador." />
                 </SelectTrigger>
