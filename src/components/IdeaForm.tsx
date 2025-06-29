@@ -7,8 +7,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lightbulb } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const IdeaForm = () => {
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     experience: '',
@@ -17,10 +20,61 @@ const IdeaForm = () => {
     problemSolved: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Aquí iría la lógica para procesar la idea
+    
+    if (!formData.firstName || !formData.ideaDescription || !formData.targetCustomer || !formData.problemSolved) {
+      toast({
+        title: "Error",
+        description: "Por favor completa todos los campos obligatorios",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    console.log('Enviando datos a webhook:', formData);
+
+    try {
+      const response = await fetch('https://n8n-demo-n8n.1riddk.easypanel.host/webhook/testealo-ai-lovable', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          timestamp: new Date().toISOString(),
+          source: 'testealo-ai-landing'
+        }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "¡Idea Enviada!",
+          description: "Tu idea ha sido enviada para validación. Te contactaremos pronto con los resultados.",
+        });
+        
+        // Reset form after successful submission
+        setFormData({
+          firstName: '',
+          experience: '',
+          ideaDescription: '',
+          targetCustomer: '',
+          problemSolved: ''
+        });
+      } else {
+        throw new Error('Error en el envío');
+      }
+    } catch (error) {
+      console.error('Error enviando datos:', error);
+      toast({
+        title: "Error",
+        description: "Hubo un problema al enviar tu idea. Por favor intenta de nuevo.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -31,7 +85,7 @@ const IdeaForm = () => {
   };
 
   return (
-    <div className="fixed top-1/2 right-8 transform -translate-y-1/2 w-96 z-10">
+    <div id="idea-form" className="w-full">
       <Card className="shadow-2xl border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-yellow-50">
         <CardHeader className="bg-gradient-to-r from-orange-400 to-yellow-400 text-white rounded-t-lg">
           <CardTitle className="flex items-center space-x-2 text-xl">
@@ -52,6 +106,7 @@ const IdeaForm = () => {
                 value={formData.firstName}
                 onChange={(e) => handleInputChange('firstName', e.target.value)}
                 className="border-gray-300 focus:border-orange-400"
+                required
               />
             </div>
 
@@ -73,7 +128,7 @@ const IdeaForm = () => {
 
             <div className="space-y-2">
               <Label htmlFor="ideaDescription" className="text-sm font-medium text-gray-700">
-                ¿Cuál es tu Idea de Startup?*
+                ¿Cuál es tu Idea de Emprendimiento?*
               </Label>
               <Textarea
                 id="ideaDescription"
@@ -81,6 +136,7 @@ const IdeaForm = () => {
                 value={formData.ideaDescription}
                 onChange={(e) => handleInputChange('ideaDescription', e.target.value)}
                 className="border-gray-300 focus:border-orange-400 min-h-[80px]"
+                required
               />
             </div>
 
@@ -94,6 +150,7 @@ const IdeaForm = () => {
                 value={formData.targetCustomer}
                 onChange={(e) => handleInputChange('targetCustomer', e.target.value)}
                 className="border-gray-300 focus:border-orange-400"
+                required
               />
             </div>
 
@@ -103,18 +160,20 @@ const IdeaForm = () => {
               </Label>
               <Textarea
                 id="problemSolved"
-                placeholder="Modelado predictivo impulsado por IA para reclamaciones de seguros..."
+                placeholder="Reduce el tiempo de procesamiento de reclamaciones..."
                 value={formData.problemSolved}
                 onChange={(e) => handleInputChange('problemSolved', e.target.value)}
                 className="border-gray-300 focus:border-orange-400 min-h-[80px]"
+                required
               />
             </div>
 
             <Button 
               type="submit" 
+              disabled={isLoading}
               className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-105"
             >
-              Validar Idea
+              {isLoading ? 'Validando...' : 'Validar Idea'}
             </Button>
           </form>
         </CardContent>

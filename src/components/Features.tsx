@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Brain, Users, TrendingUp, Rocket, Target, BarChart } from 'lucide-react';
 
 const Features = () => {
@@ -37,6 +38,16 @@ const Features = () => {
     }
   ];
 
+  const scrollToForm = () => {
+    const formElement = document.getElementById('idea-form');
+    if (formElement) {
+      formElement.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
   return (
     <section id="como-funciona" className="py-16 px-4 bg-white">
       <div className="max-w-7xl mx-auto">
@@ -49,7 +60,7 @@ const Features = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {features.map((feature, index) => (
             <Card key={index} className="hover:shadow-lg transition-shadow duration-300 border border-gray-200">
               <CardHeader>
@@ -67,6 +78,15 @@ const Features = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        <div className="text-center">
+          <Button 
+            onClick={scrollToForm}
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200 transform hover:scale-105"
+          >
+            Validar mi Idea
+          </Button>
         </div>
       </div>
     </section>
